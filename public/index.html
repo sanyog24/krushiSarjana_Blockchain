@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Explorer - Krushi Sarjana</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .blockchain-container {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .block-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .block-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .block-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .genesis-block {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .block-index {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .block-timestamp {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .product-section {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .product-image-container {
+            position: relative;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .seller-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .product-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .product-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 3px solid #667eea;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .price-tag {
+            color: #10b981;
+            font-size: 1.3rem;
+        }
+
+        .stock-tag {
+            color: #f59e0b;
+        }
+
+        .hash-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .hash-title {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .hash-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #333;
+            word-break: break-all;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .chain-link {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .chain-link::before {
+            content: '⬇';
+            font-size: 2rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            padding: 50px;
+        }
+
+        .refresh-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .refresh-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-right: 10px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .product-section {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .product-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 Blockchain Explorer</h1>
+            <p>Krushi Sarjana - Agricultural Product Blockchain</p>
+        </div>
+
+        <div class="stats-container" id="stats">
+            <div class="stat-card">
+                <div class="number" id="totalBlocks">0</div>
+                <div class="label">Total Blocks</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalProducts">0</div>
+                <div class="label">Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="farmerProducts">0</div>
+                <div class="label">Farmer Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="retailerProducts">0</div>
+                <div class="label">Retailer Products</div>
+            </div>
+        </div>
+
+        <div class="blockchain-container" id="blockchain">
+            <div class="loading">Loading blockchain data...</div>
+        </div>
+    </div>
+
+    <button class="refresh-button" onclick="loadBlockchain()">🔄 Refresh</button>
+
+    <script>
+        const API_URL = 'http://localhost:5003';
+
+        async function loadBlockchain() {
+            try {
+                const response = await fetch(`${API_URL}/chain`);
+                const blockchain = await response.json();
+
+                // Update statistics
+                updateStats(blockchain);
+
+                // Display blocks
+                displayBlocks(blockchain);
+            } catch (error) {
+                console.error('Error loading blockchain:', error);
+                document.getElementById('blockchain').innerHTML = `
+                    <div class="loading" style="color: #ff6b6b;">
+                        ❌ Error loading blockchain. Make sure the server is running on ${API_URL}
+                    </div>
+                `;
+            }
+        }
+
+        function updateStats(blockchain) {
+            const totalBlocks = blockchain.length;
+            const totalProducts = totalBlocks - 1; // Exclude genesis block
+            const farmerProducts = blockchain.filter(block => 
+                block.product.sellerType === 'Farmer'
+            ).length;
+            const retailerProducts = blockchain.filter(block => 
+                block.product.sellerType === 'Retailer'
+            ).length;
+
+            document.getElementById('totalBlocks').textContent = totalBlocks;
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('farmerProducts').textContent = farmerProducts;
+            document.getElementById('retailerProducts').textContent = retailerProducts;
+        }
+
+        function displayBlocks(blockchain) {
+            const container = document.getElementById('blockchain');
+            container.innerHTML = '';
+
+            blockchain.forEach((block, index) => {
+                const blockElement = createBlockElement(block, index === 0);
+                container.appendChild(blockElement);
+
+                // Add chain link between blocks (except for the last block)
+                if (index < blockchain.length - 1) {
+                    const chainLink = document.createElement('div');
+                    chainLink.className = 'chain-link';
+                    container.appendChild(chainLink);
+                }
+            });
+        }
+
+        function createBlockElement(block, isGenesis) {
+            const blockDiv = document.createElement('div');
+            blockDiv.className = `block-card ${isGenesis ? 'genesis-block' : ''}`;
+
+            const timestamp = new Date(block.timestamp).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            blockDiv.innerHTML = `
+                <div class="block-header">
+                    <div>
+                        <div class="block-index">Block #${block.index}</div>
+                        ${isGenesis ? '<span style="color: #ff6b6b; font-weight: bold;">🏆 GENESIS BLOCK</span>' : ''}
+                    </div>
+                    <div class="block-timestamp">
+                        📅 ${timestamp}
+                    </div>
+                </div>
+
+                <div class="product-section">
+                    <div class="product-image-container">
+                        <img src="${block.product.image}" alt="${block.product.name}" class="product-image" 
+                             onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
+                        <div class="seller-badge">${block.product.sellerType}</div>
+                    </div>
+
+                    <div class="product-details">
+                        <div>
+                            <div class="product-name">
+                                ${block.product.name}
+                                <span class="category-badge">${block.product.category}</span>
+                            </div>
+                            <div class="product-description">${block.product.description}</div>
+                        </div>
+
+                        <div class="product-info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Price</div>
+                                <div class="info-value price-tag">₹${block.product.price}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Stock</div>
+                                <div class="info-value stock-tag">${block.product.stock} ${block.product.unit}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Unit</div>
+                                <div class="info-value">${block.product.unit}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Seller Type</div>
+                                <div class="info-value">${block.product.sellerType}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hash-section">
+                    <div class="hash-title">🔐 Block Hash</div>
+                    <div class="hash-value">${block.hash}</div>
+                </div>
+
+                <div class="hash-section" style="margin-top: 10px;">
+                    <div class="hash-title">🔗 Previous Hash</div>
+                    <div class="hash-value">${block.previousHash}</div>
+                </div>
+            `;
+
+            return blockDiv;
+        }
+
+        // Load blockchain on page load
+        loadBlockchain();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadBlockchain, 30000);
+    </script>
+</body>
+</html>

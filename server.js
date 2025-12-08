@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const Blockchain = require("./blockchain");
 
 const app = express();
@@ -8,6 +9,9 @@ const blockchain = new Blockchain();
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, "public")));
 
 // Route to add a product to the blockchain
 app.post("/add-product", (req, res) => {
@@ -32,8 +36,14 @@ app.get("/chain", (req, res) => {
   res.json(blockchain.getChain());
 });
 
+// Serve the blockchain explorer UI
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
+  console.log(`Blockchain Explorer UI: http://localhost:${port}`);
 });
 
 
