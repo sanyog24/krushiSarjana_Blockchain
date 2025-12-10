@@ -4,7 +4,7 @@ const path = require("path");
 const Blockchain = require("./blockchain");
 
 const app = express();
-const port = 5003;
+const port = process.env.PORT || 5003;
 const blockchain = new Blockchain();
 
 app.use(cors());
@@ -42,9 +42,11 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-  console.log(`Blockchain Explorer UI: http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
+  console.log(`Blockchain Explorer UI available at root path`);
 });
+
+module.exports = app;
 
 
 
