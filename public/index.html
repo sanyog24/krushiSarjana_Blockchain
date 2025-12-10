@@ -344,7 +344,8 @@
     <button class="refresh-button" onclick="loadBlockchain()">🔄 Refresh</button>
 
     <script>
-        const API_URL = 'http://localhost:5003';
+        // Use relative URL for API calls - works for both local and deployed environments
+        const API_URL = window.location.origin;
 
         async function loadBlockchain() {
             try {
